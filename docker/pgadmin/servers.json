@@ -1,0 +1,13 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "IdentityUoW (docker)",
+      "Group": "Servers",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "identity_uow",
+      "Username": "postgres",
+      "SSLMode": "prefer"
+    }
+  }
+}

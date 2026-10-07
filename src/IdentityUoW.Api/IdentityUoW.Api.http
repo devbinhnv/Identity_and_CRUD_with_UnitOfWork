@@ -1,0 +1,63 @@
+@host = http://localhost:5118
+
+### Register: identity.users + identity.user_roles in ONE commit
+POST {{host}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "jane@example.com",
+  "password": "Passw0rd!",
+  "fullName": "Jane Doe"
+}
+
+### Login as the seeded admin
+# @name login
+POST {{host}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "Admin@12345"
+}
+
+###
+@token = {{login.response.body.$.data.accessToken}}
+
+### Create product (Admin)
+# @name create
+POST {{host}}/api/products
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "no": "P001",
+  "name": "Mechanical keyboard",
+  "summary": "87 keys",
+  "price": 89.90
+}
+
+###
+@productId = {{create.response.body.$.data.id}}
+
+### List products
+GET {{host}}/api/products?pageIndex=1&pageSize=10&search=key
+Authorization: Bearer {{token}}
+
+### Get by id
+GET {{host}}/api/products/{{productId}}
+Authorization: Bearer {{token}}
+
+### Update (Admin)
+PUT {{host}}/api/products/{{productId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Mechanical keyboard TKL",
+  "summary": "87 keys, hot-swap",
+  "price": 99.00
+}
+
+### Delete (Admin)
+DELETE {{host}}/api/products/{{productId}}
+Authorization: Bearer {{token}}
