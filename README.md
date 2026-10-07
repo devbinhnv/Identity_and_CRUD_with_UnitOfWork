@@ -41,14 +41,14 @@ src/IdentityUoW.Api/
 │   ├── Mediator/                   IRequest, ICommand, IRequestHandler, IMediator, Mediator  ← commit boundary
 │   ├── Models/                     ApiResult / ApiSuccessResult / ApiErrorResult, PageList, MetaData, PagingRequestParameters
 │   └── Repositories/               IUnitOfWork<TContext>, UnitOfWork<TContext>, RepositoryBaseAsync
-├── Identity/                       ApplicationUser, ApplicationRole, custom User/Role Store (no auto-save)
+├── Identity/                       UserStore, RoleStore (custom, no auto-save)
 ├── Persistence/
 │   ├── AppDbContext.cs             Một DbContext cho Identity + business, tự ghi audit
 │   ├── AppDbContextSeed.cs         Role Admin/User + tài khoản admin
 │   ├── Schemas.cs                  identity, catalog
 │   ├── Configurations/             IdentityConfiguration (đổi tên bảng), ProductConfiguration
 │   └── Migrations/
-├── Entities/                       ProductEntity (ví dụ CRUD)
+├── Entities/                       UserEntity, RoleEntity (Identity) + ProductEntity (ví dụ CRUD)
 ├── Repositories/                   IProductRepository, ProductRepository
 ├── Services/                       UserService (bọc UserManager), TokenService (JWT)
 ├── Features/                       Mỗi use case một folder: Command/Query + Handler
@@ -130,9 +130,9 @@ So với generic repository thông thường, ở đây cố ý **bỏ** `SaveCh
 ### 4.4 Custom Identity Store: Identity cũng tuân theo UoW
 
 ```csharp
-public class ApplicationUserStore : UserStore<ApplicationUser, ApplicationRole, AppDbContext, Guid>
+public class UserStore : UserStore<UserEntity, RoleEntity, AppDbContext, Guid>
 {
-    public ApplicationUserStore(AppDbContext context, IdentityErrorDescriber? describer = null)
+    public UserStore(AppDbContext context, IdentityErrorDescriber? describer = null)
         : base(context, describer) => AutoSaveChanges = false;
 }
 ```
@@ -149,7 +149,7 @@ Store được đăng ký bằng `AddIdentityCore().AddUserStore<...>().AddRoleS
 ### 4.6 Các pattern khác
 
 - **ApiResult**: mọi handler trả `ApiSuccessResult<T>` hoặc `ApiErrorResult<T>` (có `StatusCode`). Controller chỉ cần gọi `result.ToActionResult()`.
-- **Audit tự động**: `AppDbContext.SaveChangesAsync` tự điền `CreatedDate`/`LastModifiedDate` cho mọi `IDateTracking`, kể cả `ApplicationUser`.
+- **Audit tự động**: `AppDbContext.SaveChangesAsync` tự điền `CreatedDate`/`LastModifiedDate` cho mọi `IDateTracking`, kể cả `UserEntity`.
 - **Phân trang**: `PagingRequestParameters` → `PageList<T>` + `MetaData`.
 - **Extensions**: `AddInfrastructure()`, `UseInfrastructure()`, `MigrateDatabaseAsync<TContext>()` giữ `Program.cs` ở mức vài dòng.
 
@@ -161,8 +161,8 @@ Store được đăng ký bằng `AddIdentityCore().AddUserStore<...>().AddRoleS
 POST /api/auth/register
   └─ AuthController ─► IMediator.SendAsync(RegisterCommand)
         └─ RegisterCommandHandler
-              ├─ UserService.CreateAsync     → UserManager → ApplicationUserStore → identity.users      [Added]
-              └─ UserService.AssignRoleAsync → UserManager → ApplicationUserStore → identity.user_roles [Added]
+              ├─ UserService.CreateAsync     → UserManager → UserStore → identity.users      [Added]
+              └─ UserService.AssignRoleAsync → UserManager → UserStore → identity.user_roles [Added]
         handler trả ApiSuccessResult
   └─ Mediator: request là ICommand + thành công ─► UnitOfWork.CommitAsync()  (MỘT SaveChanges)
   └─ 200 OK

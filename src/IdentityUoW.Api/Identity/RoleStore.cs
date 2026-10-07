@@ -1,3 +1,4 @@
+using IdentityUoW.Api.Entities;
 using IdentityUoW.Api.Persistence;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace IdentityUoW.Api.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20261007055918_InitialCreate")]
+    [Migration("20261007060245_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -78,7 +78,7 @@ namespace IdentityUoW.Api.Persistence.Migrations
                     b.ToTable("products", "catalog");
                 });
 
-            modelBuilder.Entity("IdentityUoW.Api.Identity.ApplicationRole", b =>
+            modelBuilder.Entity("IdentityUoW.Api.Entities.RoleEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -109,7 +109,7 @@ namespace IdentityUoW.Api.Persistence.Migrations
                     b.ToTable("roles", "identity");
                 });
 
-            modelBuilder.Entity("IdentityUoW.Api.Identity.ApplicationUser", b =>
+            modelBuilder.Entity("IdentityUoW.Api.Entities.UserEntity", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
@@ -339,7 +339,7 @@ namespace IdentityUoW.Api.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
                 {
-                    b.HasOne("IdentityUoW.Api.Identity.ApplicationRole", null)
+                    b.HasOne("IdentityUoW.Api.Entities.RoleEntity", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -349,7 +349,7 @@ namespace IdentityUoW.Api.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
                 {
-                    b.HasOne("IdentityUoW.Api.Identity.ApplicationUser", null)
+                    b.HasOne("IdentityUoW.Api.Entities.UserEntity", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -359,7 +359,7 @@ namespace IdentityUoW.Api.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
                 {
-                    b.HasOne("IdentityUoW.Api.Identity.ApplicationUser", null)
+                    b.HasOne("IdentityUoW.Api.Entities.UserEntity", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -369,14 +369,14 @@ namespace IdentityUoW.Api.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
                 {
-                    b.HasOne("IdentityUoW.Api.Identity.ApplicationRole", null)
+                    b.HasOne("IdentityUoW.Api.Entities.RoleEntity", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
                         .HasConstraintName("fk_user_roles_roles_role_id");
 
-                    b.HasOne("IdentityUoW.Api.Identity.ApplicationUser", null)
+                    b.HasOne("IdentityUoW.Api.Entities.UserEntity", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -386,7 +386,7 @@ namespace IdentityUoW.Api.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
                 {
-                    b.HasOne("IdentityUoW.Api.Identity.ApplicationUser", null)
+                    b.HasOne("IdentityUoW.Api.Entities.UserEntity", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
